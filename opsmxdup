@@ -1,0 +1,162 @@
+schema: '1'
+id: generatedTemplate
+metadata:
+  name: opsmxload
+  description: GIVE ME A DESCRIPTION
+  owner: anonymous
+  scopes: []
+protect: false
+configuration:
+  concurrentExecutions:
+    parallel: []
+    limitConcurrent: true
+  triggers: []
+  parameters: []
+  notifications: []
+variables: []
+stages:
+- id: deploy1
+  type: deploy
+  dependsOn: []
+  name: DeployFirst
+  config:
+    clusters:
+    - account: my-k8s-account
+      application: devk8cluster
+      cloudProvider: kubernetes
+      containers:
+      - args: []
+        command: []
+        envFrom: []
+        envVars: []
+        imageDescription:
+          imageId: index.docker.io/opsmx11/analyzer:newrelic9-cas-logs
+          registry: index.docker.io
+          repository: opsmx11/analyzer
+          tag: newrelic9-cas-logs
+        imagePullPolicy: ALWAYS
+        name: opsmx11-analyzer
+        ports:
+        - containerPort: 8161
+          name: reporting
+          protocol: TCP
+        - containerPort: 8090
+          name: cas
+          protocol: TCP
+        - containerPort: 9090
+          name: stack
+          protocol: TCP
+        volumeMounts: []
+      dnsPolicy: ClusterFirst
+      events: []
+      freeFormDetails: cas
+      initContainers: []
+      interestingHealthProviderNames:
+      - KubernetesContainer
+      - KubernetesPod
+      loadBalancers:
+      - devk8cluster-try-elb
+      maxRemainingAsgs: 2
+      namespace: default
+      nodeSelector: {}
+      podAnnotations: {}
+      provider: kubernetes
+      region: default
+      replicaSetAnnotations: {}
+      securityGroups: []
+      stack: opsmx
+      strategy: redblack
+      targetSize: 1
+      terminationGracePeriodSeconds: 30
+      volumeSources: []
+- id: jenkins2
+  type: jenkins
+  dependsOn:
+  - deploy1
+  name: FirstLoad
+  config:
+    continuePipeline: false
+    failPipeline: true
+    job: Opsmx_Canary_Cas
+    master: opsmx-jenkins-master
+    parameters:
+      Baselinecluster: devk8cluster-restapp-dev-v003
+      Canarycluster: devk8cluster-restapp-dev-v004
+      DnsIP: 34.217.50.143
+      Lifetimehours: '0.5'
+      LoadTime: '900'
+      NThreads: '1'
+      Port: '30720'
+- id: deploy3
+  type: deploy
+  dependsOn:
+  - jenkins2
+  name: DeploySecond
+  config:
+    clusters:
+    - account: my-k8s-account
+      application: devk8cluster
+      cloudProvider: kubernetes
+      containers:
+      - args: []
+        command: []
+        envFrom: []
+        envVars: []
+        imageDescription:
+          imageId: index.docker.io/opsmx11/analyzer:newrelic9-cas-logs
+          registry: index.docker.io
+          repository: opsmx11/analyzer
+          tag: newrelic9-cas-logs
+        imagePullPolicy: ALWAYS
+        name: opsmx11-analyzer
+        ports:
+        - containerPort: 8161
+          name: reporting
+          protocol: TCP
+        - containerPort: 8090
+          name: cas
+          protocol: TCP
+        - containerPort: 9090
+          name: stack
+          protocol: TCP
+        volumeMounts: []
+      dnsPolicy: ClusterFirst
+      events: []
+      freeFormDetails: cas
+      initContainers: []
+      interestingHealthProviderNames:
+      - KubernetesContainer
+      - KubernetesPod
+      loadBalancers:
+      - devk8cluster-try-elb
+      maxRemainingAsgs: 2
+      namespace: default
+      nodeSelector: {}
+      podAnnotations: {}
+      provider: kubernetes
+      region: default
+      replicaSetAnnotations: {}
+      securityGroups: []
+      stack: opsmx
+      strategy: redblack
+      targetSize: 1
+      terminationGracePeriodSeconds: 30
+      volumeSources: []
+- id: jenkins4
+  type: jenkins
+  dependsOn:
+  - deploy3
+  name: SecondLoad
+  config:
+    continuePipeline: false
+    failPipeline: true
+    job: Opsmx_Canary_Cas
+    master: opsmx-jenkins-master
+    parameters:
+      Baselinecluster: devk8cluster-restapp-dev-v003
+      Canarycluster: devk8cluster-restapp-dev-v004
+      DnsIP: 34.217.50.143
+      Lifetimehours: '0.5'
+      LoadTime: '900'
+      NThreads: '1'
+      Port: '30720'
