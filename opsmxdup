@@ -1,7 +1,7 @@
 schema: '1'
 id: generatedTemplate
 metadata:
-  name: opsmxload
+  name: opsmxloaddup
   description: GIVE ME A DESCRIPTION
   owner: anonymous
   scopes: []
