@@ -13,19 +13,18 @@ configuration:
   triggers: []
   parameters: []
   notifications: []
-variables: []
+variables:
+- name: preloaddnsip
+  description: Loadbalancer IP for putting load on stage cluster.
+  defaultValue: 34.217.50.143
+- name: preloadtime
+  description: Load time for putting load on stage cluster.
+  defaultValue: 900
+- name: preloadport
+  description: Loadbalancer port for putting load on stage cluster.
+  defaultValue: 31172
 stages:
 - id: jenkins1
-  variables:
-  - name: preloaddnsip
-    description: Loadbalancer IP for putting load on stage cluster.
-    defaultValue: 34.217.50.143
-  - name: preloadtime
-    description: Load time for putting load on stage cluster.
-    defaultValue: 900
-  - name: preloadport
-    description: Loadbalancer port for putting load on stage cluster.
-    defaultValue: 31172
   type: jenkins
   dependsOn:
   - deploy4
