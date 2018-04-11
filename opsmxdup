@@ -18,7 +18,7 @@ stages:
 - id: deploy1
   type: deploy
   dependsOn: []
-  name: DeployFirst
+  name: Deploytestopsmx
   config:
     clusters:
     - account: my-k8s-account
@@ -56,7 +56,6 @@ stages:
       - KubernetesPod
       loadBalancers:
       - devk8cluster-try-elb
-      maxRemainingAsgs: 2
       namespace: default
       nodeSelector: {}
       podAnnotations: {}
@@ -72,26 +71,26 @@ stages:
 - id: jenkins2
   type: jenkins
   dependsOn:
-  - deploy1
-  name: FirstLoad
+  - deploy5
+  name: Load on Opsmx
   config:
     continuePipeline: false
     failPipeline: true
     job: Opsmx_Canary_Cas
     master: opsmx-jenkins-master
     parameters:
-      Baselinecluster: devk8cluster-restapp-dev-v003
-      Canarycluster: devk8cluster-restapp-dev-v004
+      Baselinecluster: devk8cluster-restapp-dev-v007
+      Canarycluster: devk8cluster-restapp-dev-current
       DnsIP: 34.217.50.143
       Lifetimehours: '0.5'
-      LoadTime: '900'
+      LoadTime: '1800'
       NThreads: '1'
       Port: '30720'
-- id: deploy3
+- id: deploy5
   type: deploy
   dependsOn:
-  - jenkins2
-  name: DeploySecond
+  - deploy1
+  name: Restapp deloy for ACA on test Opsmx
   config:
     clusters:
     - account: my-k8s-account
@@ -103,33 +102,29 @@ stages:
         envFrom: []
         envVars: []
         imageDescription:
-          imageId: index.docker.io/opsmx11/analyzer:newrelic9-cas-logs
-          registry: index.docker.io
-          repository: opsmx11/analyzer
-          tag: newrelic9-cas-logs
+          imageId: quay.io/veerendra2/restapp:latest2
+          registry: quay.io
+          repository: veerendra2/restapp
+          tag: latest2
         imagePullPolicy: ALWAYS
-        name: opsmx11-analyzer
+        name: veerendra2-restapp
         ports:
-        - containerPort: 8161
-          name: reporting
-          protocol: TCP
-        - containerPort: 8090
-          name: cas
+        - containerPort: 8080
+          name: http
           protocol: TCP
         - containerPort: 9090
-          name: stack
+          name: monitoring
           protocol: TCP
         volumeMounts: []
       dnsPolicy: ClusterFirst
       events: []
-      freeFormDetails: cas
+      freeFormDetails: dev
       initContainers: []
       interestingHealthProviderNames:
       - KubernetesContainer
       - KubernetesPod
       loadBalancers:
-      - devk8cluster-try-elb
-      maxRemainingAsgs: 2
+      - devk8cluster-restapp-elb
       namespace: default
       nodeSelector: {}
       podAnnotations: {}
@@ -137,26 +132,54 @@ stages:
       region: default
       replicaSetAnnotations: {}
       securityGroups: []
-      stack: opsmx
+      stack: restapp
       strategy: redblack
       targetSize: 1
       terminationGracePeriodSeconds: 30
       volumeSources: []
-- id: jenkins4
+- id: jenkins6
   type: jenkins
   dependsOn:
-  - deploy3
-  name: SecondLoad
+  - deploy5
+  name: Load on Restapp
   config:
     continuePipeline: false
     failPipeline: true
-    job: Opsmx_Canary_Cas
+    job: AcaRestAppLoad
     master: opsmx-jenkins-master
     parameters:
-      Baselinecluster: devk8cluster-restapp-dev-v003
-      Canarycluster: devk8cluster-restapp-dev-v004
-      DnsIP: 34.217.50.143
-      Lifetimehours: '0.5'
-      LoadTime: '900'
-      NThreads: '1'
-      Port: '30720'
+      dnsip: 34.217.50.143
+      loadtime: '1800'
+      port: '31172'
+- id: acaTask7
+  type: acaTask
+  dependsOn:
+  - deploy5
+  name: ACA Task for OPSMX
+  config:
+    baseline: {}
+    canary:
+      application: devk8cluster
+      canaryConfig:
+        canaryAnalysisConfig:
+          beginCanaryAnalysisAfterMins: '1'
+          canaryAnalysisIntervalMins: '30'
+          lookbackMins: 0
+          name: sandy-cas-template
+          notificationHours: []
+          useLookback: false
+        canaryHealthCheckHandler:
+          '@class': com.netflix.spinnaker.mine.CanaryResultHealthCheckHandler
+          minimumCanaryResultScore: '60'
+        canarySuccessCriteria:
+          canaryResultScore: '80'
+        combinedCanaryResultStrategy: AGGREGATE
+        lifetimeHours: '0.25'
+        name: newrelic
+      canaryDeployments:
+      - '@class': .CanaryTaskDeployment
+        accountName: my-k8s-account
+        baseline: devk8cluster-opsmx-cas-v013
+        canary: devk8cluster-opsmx-cas-current
+        type: cluster
+      watchers: []
