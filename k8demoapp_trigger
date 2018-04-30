@@ -1,0 +1,99 @@
+configuration:
+  concurrentExecutions:
+    limitConcurrent: true
+    parallel: false
+  triggers:
+  - account: "{{ docker-registry-account }}"
+    enabled: "{{ enable-trigger }}"
+    name: unnamed0
+    organization: "{{ registry-organization }}"
+    registry: quay.io
+    repository: veerendra2/restapp
+    tag: latest2
+    type: docker
+variables:
+- name: docker-registry-account
+  description: Required for docker based trigger
+  defaultValue: my-docker-registry
+- name: enable-trigger
+  description: Enables trigger
+  defaultValue: true
+  type: boolean
+- name: registry-organization
+  description: Put docker registry organization name
+  defaultValue: veerendra2
+- name: image-tag
+  description: (Optional)
+id: demoapp-K8demoapp
+metadata:
+  description: This template does not have a description
+  name: K8demoapp
+  owner: anonymous
+  scopes:
+  - demoapp
+protect: false
+schema: "1"
+stages:
+- config:
+    continuePipeline: false
+    failPipeline: true
+    job: restapppipe
+    master: opsmx-jenkins-master
+    parameters: {}
+  id: jenkins1
+  inheritanceControl: {}
+  inject: {}
+  name: Build-Image
+  type: jenkins
+- config:
+    clusters:
+    - account: my-k8s-account
+      application: demoapp
+      cloudProvider: kubernetes
+      containers:
+      - args: []
+        command: []
+        envFrom: []
+        envVars: []
+        imageDescription:
+          imageId: quay.io/veerendra2/restapp:latest2
+          registry: quay.io
+          repository: veerendra2/restapp
+          tag: latest2
+        imagePullPolicy: ALWAYS
+        name: veerendra2-restapp
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 9090
+          name: prom
+          protocol: TCP
+        volumeMounts: []
+      dnsPolicy: ClusterFirst
+      events: []
+      initContainers: []
+      interestingHealthProviderNames:
+      - KubernetesContainer
+      - KubernetesPod
+      loadBalancers:
+      - demoapp-k8devtest
+      namespace: default
+      nodeSelector: {}
+      podAnnotations: {}
+      provider: kubernetes
+      region: default
+      replicaSetAnnotations: {}
+      securityGroups: []
+      stack: k8devcluster
+      strategy: highlander
+      targetSize: 1
+      terminationGracePeriodSeconds: 30
+      volumeSources: []
+  dependsOn:
+  - jenkins1
+  id: deploy2
+  inheritanceControl: {}
+  inject: {}
+  name: Stagging-Deploy
+  type: deploy
