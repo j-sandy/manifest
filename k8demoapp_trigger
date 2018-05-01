@@ -7,9 +7,9 @@ configuration:
     enabled: "{{ enable-trigger }}"
     name: unnamed0
     organization: "{{ registry-organization }}"
-    registry: quay.io
-    repository: veerendra2/restapp
-    tag: latest2
+    registry: "{{ registry-name }}"
+    repository: "{{ registry-repo }}"
+    tag: "{{ image-tag }}"
     type: docker
 variables:
 - name: docker-registry-account
@@ -24,27 +24,22 @@ variables:
   defaultValue: veerendra2
 - name: image-tag
   description: (Optional)
-id: demoapp-K8demoapp
+  defaultValue: latest2
+- name: registry-name
+  description: Put docker registry name
+  defaultValue: quay.io
+- name: registry-repo
+  description: Put docker registry repo
+id: K8demoapp2
 metadata:
   description: This template does not have a description
-  name: K8demoapp
+  name: K8demoapp2
   owner: anonymous
   scopes:
   - demoapp
 protect: false
 schema: "1"
 stages:
-- config:
-    continuePipeline: false
-    failPipeline: true
-    job: restapppipe
-    master: opsmx-jenkins-master
-    parameters: {}
-  id: jenkins1
-  inheritanceControl: {}
-  inject: {}
-  name: Build-Image
-  type: jenkins
 - config:
     clusters:
     - account: my-k8s-account
@@ -90,8 +85,6 @@ stages:
       targetSize: 1
       terminationGracePeriodSeconds: 30
       volumeSources: []
-  dependsOn:
-  - jenkins1
   id: deploy2
   inheritanceControl: {}
   inject: {}
