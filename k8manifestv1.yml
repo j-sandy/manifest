@@ -21,7 +21,7 @@ protect: false
 schema: "1"
 stages:
 - config:
-    account: my-k8s-v2-account
+    account: my-k8s-account
     cloudProvider: kubernetes
     manifestArtifactAccount: embedded-artifact
     manifests:
