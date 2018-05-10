@@ -46,20 +46,20 @@ stages:
           matchLabels:
             app: openshifttest3
             cluster: openshifttest3-test
-            #openshifttest3-test-v000: '''true'''
+            #openshifttest3-test-v000: 'true'
             replication-controller: openshifttest3-test-v000
             stack: test
-            #version: '''0'''
+            #version: '0'
         template:
           metadata:
             finalizers: []
             labels:
               app: openshifttest3
               cluster: openshifttest3-test
-              #openshifttest3-test-v000: '''true'''
+              #openshifttest3-test-v000: 'true'
               replication-controller: openshifttest3-test-v000
               stack: test
-              #version: '''0'''
+              #version: '0'
             ownerReferences: []
           spec:
             containers:
