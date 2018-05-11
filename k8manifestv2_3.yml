@@ -1,0 +1,120 @@
+configuration:
+  concurrentExecutions:
+    limitConcurrent: true
+    parallel: false
+  triggers:
+  - account: my-docker-registry
+    enabled: false
+    name: unnamed0
+    organization: veerendra2
+    registry: quay.io
+    repository: veerendra2/restapp
+    type: docker
+id: testauth-testmanifest
+metadata:
+  description: This template does not have a description
+  name: testmanifest
+  owner: anonymous
+  scopes:
+  - global
+protect: false
+schema: "1"
+stages:
+- config:
+    account: my-k8s-v2-account
+    cloudProvider: kubernetes
+    manifestArtifactAccount: embedded-artifact
+    manifests:
+    - apiVersion: extensions/v1beta1
+      kind: ReplicaSet
+      metadata:
+        finalizers: []
+        labels:
+          app: openshifttest3
+          cluster: openshifttest3-test
+          #openshifttest3-test-v000: 'true'
+          replication-controller: openshifttest3-test-v000
+          stack: test
+          #version: '0'
+        name: openshifttest3-test-v000
+        namespace: default
+        ownerReferences: []
+      spec:
+        replicas: 1
+        selector:
+          matchExpressions: []
+          matchLabels:
+            app: openshifttest3
+            cluster: openshifttest3-test
+            #openshifttest3-test-v000: 'true'
+            replication-controller: openshifttest3-test-v000
+            stack: test
+            #version: '0'
+        template:
+          metadata:
+            finalizers: []
+            labels:
+              app: openshifttest3
+              cluster: openshifttest3-test
+              #openshifttest3-test-v000: 'true'
+              replication-controller: openshifttest3-test-v000
+              stack: test
+              #version: '0'
+            ownerReferences: []
+          spec:
+            containers:
+            - args: []
+              command: []
+              env: []
+              image: ${ trigger.artifacts[0].reference }
+              imagePullPolicy: Always
+              name: veerendra2-restapp
+              ports:
+              - containerPort: 8080
+                name: http
+                protocol: TCP
+              - containerPort: 9090
+                name: monitor
+                protocol: TCP
+              readinessProbe:
+                failureThreshold: 3
+                httpGet:
+                  httpHeaders: []
+                  path: /greeting
+                  port: 8080
+                  scheme: HTTP
+                periodSeconds: 10
+                successThreshold: 1
+                timeoutSeconds: 1
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts: []
+            dnsPolicy: ClusterFirst
+            imagePullSecrets:
+            - name: my-docker-registry
+            restartPolicy: Always
+            schedulerName: default-scheduler
+            securityContext:
+              supplementalGroups: []
+            terminationGracePeriodSeconds: 30
+            volumes: []
+      status:
+        availableReplicas: 1
+        conditions: []
+        fullyLabeledReplicas: 1
+        observedGeneration: 1
+        readyReplicas: 1
+        replicas: 1
+    moniker:
+      app: testauth
+      cluster: manifestdev
+    relationships:
+      loadBalancers: []
+      securityGroups: []
+    source: text
+  id: deployManifest1
+  inheritanceControl: {}
+  inject: {}
+  name: Deploy (Manifest)
+  type: deployManifest
