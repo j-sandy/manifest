@@ -107,7 +107,7 @@ stages:
         readyReplicas: 1
         replicas: 1
     moniker:
-      app: testauth
+      app: k8testapp
       cluster: manifestdev
     relationships:
       loadBalancers: []
