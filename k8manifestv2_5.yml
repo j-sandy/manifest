@@ -1,3 +1,13 @@
+variables:
+- name: preloaddnsip
+  description: Loadbalancer IP for putting load on stage cluster.
+  defaultValue: 34.217.50.143
+- name: preloadtime
+  description: Load time for putting load on stage cluster.
+  defaultValue: 900
+- name: preloadport
+  description: Loadbalancer port for putting load on stage cluster.
+  defaultValue: 31172
 configuration:
   concurrentExecutions:
     limitConcurrent: true
@@ -106,9 +116,9 @@ stages:
         observedGeneration: 1
         readyReplicas: 1
         replicas: 1
-    moniker:
-      app: k8testapp
-      cluster: manifestdev
+    #moniker:
+    #  app: k8testapp
+    #  cluster: manifestdev
     relationships:
       loadBalancers: []
       securityGroups: []
