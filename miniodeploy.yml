@@ -1,0 +1,64 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  # This name uniquely identifies the Deployment
+  name: minio-client-deployment
+spec:
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        # Label is used as selector in the service.
+        app: minio-client
+    spec:
+      containers:
+        - name: pluto
+          image: docker.io/opsmx11/minio-client:v2
+          imagePullPolicy: Always
+          env:
+            - name: minio1Endpoint
+              valueFrom:
+                configMapKeyRef:
+                  name: mcclient
+                  key: minio1endpoint
+            - name: minio1Accesskey
+              valueFrom:
+                configMapKeyRef:
+                  name: mcclient
+                  key: minio1accesskey
+            - name: minio1Secretaccess
+              valueFrom:
+                configMapKeyRef:
+                  name: mcclient
+                  key: minio1secretaccess
+            - name: minio2Endpoint
+              valueFrom:
+                configMapKeyRef:
+                  name: mcclient
+                  key: minio2endpoint
+            - name: minio2Accesskey
+              valueFrom:
+                configMapKeyRef:
+                  name: mcclient
+                  key: minio2accesskey 
+            - name: minio2Secretaccess
+              valueFrom:
+                configMapKeyRef:
+                  name: mcclient
+                  key: minio2secretaccess
+            - name: bucket
+              valueFrom:
+                configMapKeyRef:
+                  name: mcclient
+                  key: bucket
+            - name: bucket2
+              valueFrom:
+                configMapKeyRef:
+                  name: mcclient
+                  key: bucketsecond
+          command: [ "/bin/sh", "-c"]
+          args: [ "./mc --config-folder /root config host add minio1 $(minio1Endpoint) $(minio1Accesskey) $(minio1Secretaccess); 
+          ./mc --config-folder /root config host add minio2 $(minio2Endpoint) $(minio2Accesskey) $(minio2Secretaccess); 
+          ./mc --config-folder /root mirror -w minio1/$(bucket) minio2/$(bucket2) " ] 
+    restartPolicy: Never
