@@ -1,0 +1,12 @@
+schema: "1"
+pipeline:
+  application: nottotry
+  name: httpmanifest_config
+  template:
+    source: https://raw.githubusercontent.com/j-sandy/manifest/master/k8manifestv2_2.yml
+  locked:
+    allowUnlockUi: true
+    description: locking up
+    ui: true
+configuration:
+  inherit: ["triggers","parameters"]
