@@ -35,7 +35,7 @@ stages:
           imageId: quay.io/veerendra2/restapp:latest2
           registry: quay.io
           repository: veerendra2/restapp
-          tag: latest2
+          tag: latest
         imagePullPolicy: ALWAYS
         name: veerendra2-restapp
         ports:
@@ -61,7 +61,7 @@ stages:
       region: default
       replicaSetAnnotations: {}
       securityGroups: []
-      stack: k8devcluster
+      stack: k8prodcluster
       strategy: highlander
       targetSize: 1
       terminationGracePeriodSeconds: 30
