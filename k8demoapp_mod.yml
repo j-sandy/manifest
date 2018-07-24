@@ -9,7 +9,7 @@ configuration:
     organization: veerendra2
     registry: quay.io
     repository: veerendra2/restapp
-    tag: latest2
+    tag: latest
     type: docker
 id: demoapp-K8demoapp
 metadata:
@@ -63,11 +63,11 @@ stages:
       securityGroups: []
       stack: k8prodcluster
       strategy: highlander
-      targetSize: 1
+      targetSize: 2
       terminationGracePeriodSeconds: 30
       volumeSources: []
   id: deploy2
   inheritanceControl: {}
   inject: {}
-  name: Stagging-Deploy
+  name: Staging-Deploy
   type: deploy
