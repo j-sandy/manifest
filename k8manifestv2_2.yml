@@ -10,7 +10,7 @@ configuration:
     registry: quay.io
     repository: veerendra2/restapp
     type: docker
-    tag: latest
+    tag: latest2
 id: nottotry-testmanifest
 metadata:
   description: This template does not have a description
