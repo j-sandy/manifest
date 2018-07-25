@@ -7,6 +7,6 @@ pipeline:
   variables:
   - preloaddnsip: 0.0.0.0
     preloadtime: 1200
-	preloadport: 12345
+    preloadport: 12345
 configuration:
   inherit: ["triggers","parameters"]
