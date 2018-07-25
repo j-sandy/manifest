@@ -1,0 +1,12 @@
+schema: "1"
+pipeline:
+  application: devk8cluster
+  name: paramtest2
+  template:
+    source: spinnaker://generatedTemplate
+  variables:
+  - preloaddnsip: 0.0.0.0
+    preloadtime: 1200
+	preloadport: 12345
+configuration:
+  inherit: ["triggers","parameters"]
