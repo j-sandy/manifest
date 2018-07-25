@@ -10,7 +10,7 @@ configuration:
     registry: quay.io
     repository: veerendra2/restapp
     type: docker
-    tag: latest2
+    tag: tryingnew
 id: nottotry-testmanifest
 metadata:
   description: This template does not have a description
@@ -27,7 +27,7 @@ stages:
     manifestArtifactAccount: embedded-artifact
     manifests:
     - apiVersion: extensions/v1beta1
-      kind: ReplicaSet
+      kind: Deployment
       metadata:
         finalizers: []
         labels:
