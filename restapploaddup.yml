@@ -4,7 +4,8 @@ metadata:
   name: restapploaddup
   description: GIVE ME A DESCRIPTION
   owner: anonymous
-  scopes: []
+  scopes:
+  - global
 protect: false
 configuration:
   concurrentExecutions:
