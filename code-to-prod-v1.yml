@@ -1,0 +1,189 @@
+configuration:
+  concurrentExecutions:
+    limitConcurrent: true
+    parallel: false
+  triggers:
+  - branch: master
+    enabled: false
+    name: unnamed0
+    project: sher-locked
+    slug: simple-deploy
+    source: bitbucket
+    type: git
+id: codetoprodv1
+metadata:
+  description: This template does not have a description
+  name: code-to-prod (v1)
+  owner: anonymous
+  scopes:
+  - global
+protect: false
+schema: "1"
+stages:
+- config:
+    continuePipeline: false
+    failPipeline: true
+    job: bitbucket-restapp
+    master: opsmx-jenkins-master
+    parameters: {}
+  id: jenkins1
+  inheritanceControl: {}
+  inject: {}
+  name: Jenkins
+  type: jenkins
+- config:
+    clusters:
+    - account: my-k8s-account
+      application: replicatest
+      cloudProvider: kubernetes
+      containers:
+      - args: []
+        command: []
+        envFrom: []
+        envVars: []
+        imageDescription:
+          account: my-docker-hub-registry
+          imageId: index.docker.io/opsmx11/restapp:latest
+          registry: index.docker.io
+          repository: opsmx11/restapp
+          tag: latest
+        imagePullPolicy: ALWAYS
+        limits: {}
+        name: opsmx11-restapp
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        requests: {}
+        volumeMounts: []
+      deployment:
+        deploymentStrategy:
+          rollingUpdate:
+            maxSurge: 1
+            maxUnavailable: 1
+          type: RollingUpdate
+        enabled: false
+        minReadySeconds: 0
+      dnsPolicy: ClusterFirst
+      freeFormDetails: stage
+      initContainers: []
+      interestingHealthProviderNames:
+      - KubernetesContainer
+      - KubernetesPod
+      loadBalancers:
+      - replicatest-v1-lb-stage
+      namespace: default
+      nodeSelector: {}
+      podAnnotations: {}
+      provider: kubernetes
+      region: default
+      replicaSetAnnotations: {}
+      stack: v1
+      strategy: highlander
+      targetSize: 1
+      terminationGracePeriodSeconds: 30
+      useSourceCapacity: false
+      volumeSources: []
+  dependsOn:
+  - jenkins1
+  id: deploy2
+  inheritanceControl: {}
+  inject: {}
+  name: Deploy
+  type: deploy
+- config:
+    account: my-k8s-v2-account
+    baseline: {}
+    canary:
+      application: replicatest
+      canaryConfig:
+        canaryAnalysisConfig:
+          lookbackMins: 0
+          notificationHours: []
+          useLookback: false
+        canaryHealthCheckHandler:
+          '@class': com.netflix.spinnaker.mine.CanaryResultHealthCheckHandler
+        name: code-to-prod (v1) - Canary
+      canaryDeployments:
+      - '@class': .CanaryTaskDeployment
+        type: query
+      watchers: []
+    cloudProvider: kubernetes
+    failPipeline: true
+    judgmentInputs:
+    - value: Proceed
+    - value: Abort
+    location: ""
+    manifestArtifactAccount: embedded-artifact
+    notifications: []
+    options:
+      mergeStrategy: strategic
+      record: true
+    source: text
+  dependsOn:
+  - deploy2
+  id: manualJudgment3
+  inheritanceControl: {}
+  inject: {}
+  name: Manual Judgment
+  type: manualJudgment
+- config:
+    clusters:
+    - account: my-k8s-account
+      application: replicatest
+      cloudProvider: kubernetes
+      containers:
+      - args: []
+        command: []
+        envFrom: []
+        envVars: []
+        imageDescription:
+          account: my-docker-hub-registry
+          imageId: index.docker.io/opsmx11/restapp:latest
+          registry: index.docker.io
+          repository: opsmx11/restapp
+          tag: latest
+        imagePullPolicy: ALWAYS
+        limits: {}
+        name: opsmx11-restapp
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        requests: {}
+        volumeMounts: []
+      deployment:
+        deploymentStrategy:
+          rollingUpdate:
+            maxSurge: 1
+            maxUnavailable: 1
+          type: RollingUpdate
+        enabled: false
+        minReadySeconds: 0
+      dnsPolicy: ClusterFirst
+      freeFormDetails: cluster-prod
+      initContainers: []
+      interestingHealthProviderNames:
+      - KubernetesContainer
+      - KubernetesPod
+      loadBalancers:
+      - replicatest-v1-lb-prod
+      namespace: default
+      nodeSelector: {}
+      podAnnotations: {}
+      provider: kubernetes
+      region: default
+      replicaSetAnnotations: {}
+      stack: v1
+      strategy: redblack
+      targetSize: 1
+      terminationGracePeriodSeconds: 30
+      useSourceCapacity: false
+      volumeSources: []
+  dependsOn:
+  - manualJudgment3
+  id: deploy4
+  inheritanceControl: {}
+  inject: {}
+  name: Deploy
+  type: deploy
