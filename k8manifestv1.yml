@@ -107,7 +107,7 @@ stages:
         readyReplicas: 1
         replicas: 1
     moniker:
-      app: pipelinexpre
+      app: ${execution['application']}
       cluster: manifest
     relationships:
       loadBalancers: []
