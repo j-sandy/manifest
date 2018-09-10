@@ -16,7 +16,7 @@ metadata:
   name: manifest
   owner: anonymous
   scopes:
-  - nottotry
+  - global
 protect: false
 schema: "1"
 stages:
