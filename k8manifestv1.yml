@@ -8,7 +8,7 @@ configuration:
     name: unnamed0
     organization: veerendra2
     registry: quay.io
-    repository: veerendra2/dockercontainer
+    repository: veerendra2/dockcontainer
     type: docker
 id: nottotry-manifest
 metadata:
