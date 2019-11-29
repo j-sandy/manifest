@@ -1,0 +1,247 @@
+{
+  "id": "k8sdev-demo-sandy",
+  "lastModifiedBy": "opsmxemp1",
+  "metadata": {
+    "description": "Configure code to deploy for Kubernetes",
+    "name": "Code to deploy Kubernetes Demo",
+    "owner": "info@opsmx.com",
+    "scopes": [
+      "global"
+    ]
+  },
+  "pipeline": {
+    "appConfig": {},
+    "expectedArtifacts": [
+      {
+        "defaultArtifact": {
+          "artifactAccount": "OpsMx-demoGit",
+          "id": "7d0f7db0-8aa4-4086-8050-fd462580f833",
+          "name": "src/main/java/hello/GreetingController.java",
+          "reference": "https://api.github.com/repos/OpsMx/restapp/contents/src/main/java/hello/GreetingController.java",
+          "type": "github/file",
+          "version": "master"
+        },
+        "displayName": "opsmx-gp",
+        "id": "bba49786-898c-4f32-bcd7-5a9669022017",
+        "matchArtifact": {
+          "artifactAccount": "OpsMx-demoGit",
+          "id": "72f0c74e-185d-46d8-9d26-ef75a537538b",
+          "name": "src/main/*.*",
+          "type": "github/file"
+        },
+        "useDefaultArtifact": true,
+        "usePriorArtifact": false
+      }
+    ],
+    "keepWaitingPipelines": false,
+    "limitConcurrent": true,
+    "parameterConfig": [],
+    "stages": [
+      {
+        "continuePipeline": false,
+        "failPipeline": true,
+        "job": "${ templateVariables.jenkinsjob }",
+        "master": "${ templateVariables.jenkinsmaster }",
+        "name": "Build",
+        "parameters": {},
+        "propertyFile": "${ templateVariables.jenkinsartifactfile }",
+        "refId": "1",
+        "requisiteStageRefIds": [],
+        "type": "jenkins"
+      },
+      {
+        "account": "${ templateVariables.account }",
+        "cloudProvider": "kubernetes",
+        "manifestArtifactAccount": "docker-registry",
+        "manifests": [
+          {
+            "apiVersion": "extensions/v1beta1",
+            "kind": "Deployment",
+            "metadata": {
+              "name": "opsmx-restapp"
+            },
+            "spec": {
+              "replicas": 1,
+              "selector": {
+                "matchLabels": {
+                  "app": "opsmx-stage"
+                }
+              },
+              "template": {
+                "metadata": {
+                  "labels": {
+                    "app": "opsmx-stage",
+                    "version": "${#stage(\"Build\")[\"context\"][\"Buildnumber\"]}"
+                  }
+                },
+                "spec": {
+                  "containers": [
+                    {
+                      "image": "docker.io/opsmx11/restapp:${#stage(\"Build\")[\"context\"][\"Buildnumber\"]}",
+                      "imagePullPolicy": "Always",
+                      "name": "restapp",
+                      "ports": [
+                        {
+                          "containerPort": 8080,
+                          "name": "http",
+                          "protocol": "TCP"
+                        },
+                        {
+                          "containerPort": 9090,
+                          "name": "prometheus",
+                          "protocol": "TCP"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "moniker": {
+          "app": "multiclouddemo"
+        },
+        "name": "Staging_Deploy",
+        "refId": "2",
+        "relationships": {
+          "loadBalancers": [],
+          "securityGroups": []
+        },
+        "requisiteStageRefIds": [
+          "1"
+        ],
+        "skipExpressionEvaluation": false,
+        "source": "text",
+        "trafficManagement": {
+          "enabled": false,
+          "options": {
+            "enableTraffic": true,
+            "namespace": "default",
+            "services": [
+              "service simple-svc"
+            ],
+            "strategy": "redblack"
+          }
+        },
+        "type": "deployManifest"
+      },
+      {
+        "continuePipeline": false,
+        "failPipeline": true,
+        "job": "Greeting Load",
+        "master": "${ templateVariables.jenkinsmaster }",
+        "name": "Run Test Suite1",
+        "parameters": {
+          "dnsip": "35.239.228.58",
+          "loadtime": "40"
+        },
+        "refId": "3",
+        "requisiteStageRefIds": [
+          "2"
+        ],
+        "type": "jenkins"
+      },
+      {
+        "failPipeline": true,
+        "instructions": "${#stage(\"Build\")[\"context\"][\"Buildnumber\"]}",
+        "judgmentInputs": [
+          {
+            "value": "Success"
+          },
+          {
+            "value": "Fail"
+          }
+        ],
+        "name": "Verify Test",
+        "notifications": [],
+        "propagateAuthenticationContext": true,
+        "refId": "4",
+        "requisiteStageRefIds": [
+          "3",
+          "6"
+        ],
+        "type": "manualJudgment"
+      },
+      {
+        "application": "multiclouddemo",
+        "failPipeline": true,
+        "name": "Prod-Deploy",
+        "pipeline": "6535894b-3e4a-453f-9b51-f9afc94db111",
+        "pipelineParameters": {
+          "version": "${#stage(\"Build\")[\"context\"][\"Buildnumber\"]}"
+        },
+        "refId": "5",
+        "requisiteStageRefIds": [
+          "4"
+        ],
+        "stageEnabled": {
+          "expression": "${#judgement('Verify Test') == 'Success'}",
+          "type": "expression"
+        },
+        "type": "pipeline",
+        "waitForCompletion": true
+      },
+      {
+        "continuePipeline": false,
+        "failPipeline": true,
+        "job": "Greeting Load",
+        "master": "${ templateVariables.jenkinsmaster }",
+        "name": "Run Test Suite2",
+        "parameters": {
+          "dnsip": "35.239.228.58",
+          "loadtime": "40"
+        },
+        "refId": "6",
+        "requisiteStageRefIds": [
+          "2"
+        ],
+        "type": "jenkins"
+      }
+    ],
+    "triggers": [
+      {
+        "branch": "master",
+        "enabled": true,
+        "expectedArtifactIds": [
+          "bba49786-898c-4f32-bcd7-5a9669022017"
+        ],
+        "project": "OpsMx",
+        "secret": "OpsMx@123",
+        "slug": "restapp",
+        "source": "github",
+        "type": "git"
+      }
+    ]
+  },
+  "protect": false,
+  "schema": "v2",
+  "tag": "latest",
+  "updateTs": "1573791972211",
+  "variables": [
+    {
+      "defaultValue": "Gitrestapp",
+      "description": "The jenkins job name",
+      "name": "jenkinsjob",
+      "type": "string"
+    },
+    {
+      "defaultValue": "opsmx-jenkins-master",
+      "description": "The jenkins Master name ",
+      "name": "jenkinsmaster",
+      "type": "string"
+    },
+    {
+      "defaultValue": "file.properties",
+      "description": "The jenkins artifact file",
+      "name": "jenkinsartifactfile",
+      "type": "string"
+    },
+    {
+      "defaultValue": "my-k8s-v2-account",
+      "description": "The kubernetes account",
+      "name": "account",
+      "type": "string"
+    }
+  ]
+}
