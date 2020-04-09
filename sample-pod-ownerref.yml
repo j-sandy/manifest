@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  annotations:
+    kubernetes.io/created-by: |
+      {"kind":"SerializedReference","apiVersion":"v1","reference":{"kind":"ReplicaSet","namespace":"default","name":"prometheus-2750169082","uid":"ce4d498f-04eb-11e8-a881-0235760117ac","apiVersion":"extensions","resourceVersion":"1182458"}}
+    openshift.io/scc: restricted
+  creationTimestamp: null
+  generateName: prometheus-2750169082-
+  labels:
+    app: prometheus
+    pod-template-hash: "2750169082"
+  ownerReferences:
+  - apiVersion: extensions/v1beta1
+    blockOwnerDeletion: true
+    controller: true
+    kind: ReplicaSet
+    name: prometheus-2750169082
+    uid: ce4d498f-04eb-11e8-a881-0235760117ac
+spec:
+  containers:
+  - args:
+    - --config.file=/etc/prometheus/prometheus.yml
+    image: prom/prometheus:v2.0.0
+    imagePullPolicy: IfNotPresent
+    name: prometheus
+    ports:
+    - containerPort: 9090
+      name: web
+      protocol: TCP
+    resources: {}
+    securityContext:
+      capabilities:
+        drop:
+        - KILL
+        - MKNOD
+        - SETGID
+        - SETUID
+      privileged: false
+      seLinuxOptions:
+        level: s0:c1,c0
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /etc/prometheus
+      name: config-volume
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: prometheus-token-785cx
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  imagePullSecrets:
+  - name: prometheus-dockercfg-xsg7s
+  nodeName: localhost
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1000000000
+    seLinuxOptions:
+      level: s0:c1,c0
+  serviceAccount: prometheus
+  serviceAccountName: prometheus
+  terminationGracePeriodSeconds: 30
+  volumes:
+  - configMap:
+      defaultMode: 420
+      name: prometheus
+    name: config-volume
+  - name: prometheus-token-785cx
+    secret:
+      defaultMode: 420
+      secretName: prometheus-token-785cx
+status:
+  phase: Pending
+  qosClass: BestEffort
