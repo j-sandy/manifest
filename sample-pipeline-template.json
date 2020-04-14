@@ -1,0 +1,80 @@
+{
+ "id": "sample-pipeline-template-001",
+ "lastModifiedBy": "opsmxuser",
+ "metadata": {
+  "description": "Sample pipeline template",
+  "name": "sample-pipeline-template",
+  "owner": "test@abc.com",
+  "scopes": [
+   "global"
+  ]
+ },
+ "pipeline": {
+  "isNew": true,
+  "keepWaitingPipelines": false,
+  "lastModifiedBy": "opsmxuser",
+  "limitConcurrent": true,
+  "spelEvaluator": "v4",
+  "stages": [
+   {
+    "account": "testenv",
+    "cloudProvider": "kubernetes",
+    "isNew": true,
+    "manifests": [
+     {
+      "apiVersion": "apps/v1beta1",
+      "kind": "Deployment",
+      "metadata": {
+       "name": "nginx-deployment"
+      },
+      "spec": {
+       "minReadySeconds": 5,
+       "template": {
+        "metadata": {
+         "labels": {
+          "app": "nginx"
+         }
+        },
+        "spec": {
+         "containers": [
+          {
+           "image": "nginx:1.7.9",
+           "name": "nginx",
+           "ports": [
+            {
+             "containerPort": 80
+            }
+           ]
+          }
+         ]
+        }
+       }
+      }
+     }
+    ],
+    "moniker": {
+     "app": "permtestapp2"
+    },
+    "name": "Deploy Service",
+    "refId": "1",
+    "requisiteStageRefIds": [],
+    "skipExpressionEvaluation": false,
+    "source": "text",
+    "trafficManagement": {
+     "enabled": false,
+     "options": {
+      "enableTraffic": false,
+      "services": []
+     }
+    },
+    "type": "deployManifest"
+   }
+  ],
+  "triggers": [],
+  "updateTs": "1586880836000"
+ },
+ "protect": false,
+ "schema": "v2",
+ "updateTs": "1586881054000",
+ "variables": []
+}
