@@ -1,0 +1,106 @@
+{
+  "id": "bc8b8c3d-2ff7-41a7-a2b7-4bf35f9885a2",
+  "metadata": {
+    "description": "Sample template",
+    "name": "sample-pipeline-template-002",
+    "owner": "sandesh@opsmx.com",
+    "scopes": [
+      "global"
+    ]
+  },
+  "pipeline": {
+    "appConfig": {},
+    "keepWaitingPipelines": false,
+    "lastModifiedBy": "opsmxadmin",
+    "limitConcurrent": true,
+    "parameterConfig": [
+      {
+        "default": "",
+        "description": "Docker Image",
+        "hasOptions": false,
+        "label": "image",
+        "name": "image",
+        "options": [
+          {
+            "value": ""
+          }
+        ],
+        "pinned": false,
+        "required": true
+      },
+      {
+        "default": "",
+        "description": "",
+        "hasOptions": false,
+        "label": "tag",
+        "name": "tag",
+        "options": [
+          {
+            "value": ""
+          }
+        ],
+        "pinned": false,
+        "required": true
+      }
+    ],
+    "spelEvaluator": "v4",
+    "stages": [
+      {
+        "account": "my-k8s-v2-account",
+        "cloudProvider": "kubernetes",
+        "manifests": [
+          {
+            "apiVersion": "apps/v1beta1",
+            "kind": "Deployment",
+            "metadata": {
+              "name": "nginx-deployment"
+            },
+            "spec": {
+              "minReadySeconds": 5,
+              "template": {
+                "metadata": {
+                  "labels": {
+                    "app": "nginx"
+                  }
+                },
+                "spec": {
+                  "containers": [
+                    {
+                      "image": "${parameters.image}:${parameters.tag}",
+                      "name": "nginx",
+                      "ports": [
+                        {
+                          "containerPort": 80
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ],
+        "moniker": {
+          "app": "oesdemo"
+        },
+        "name": "Deploy Service",
+        "refId": "1",
+        "requisiteStageRefIds": [],
+        "skipExpressionEvaluation": false,
+        "source": "text",
+        "trafficManagement": {
+          "enabled": false,
+          "options": {
+            "enableTraffic": false
+          }
+        },
+        "type": "deployManifest"
+      }
+    ],
+    "triggers": [],
+    "updateTs": "1586956073220"
+  },
+  "protect": false,
+  "schema": "v2",
+  "variables": []
+}

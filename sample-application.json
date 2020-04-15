@@ -1,0 +1,34 @@
+{
+ "attributes": {
+  "cloudProviders": "kubernetes",
+  "createTs": "1586949994981",
+  "email": "sandesh@opsmx.com",
+  "instancePort": 80,
+  "lastModifiedBy": "opsmxadmin",
+  "name": "oesdemo",
+  "permissions": {
+   "EXECUTE": [
+    "devopsemp",
+    "devemp"
+   ],
+   "READ": [
+    "devopsemp",
+    "devemp"
+   ],
+   "WRITE": [
+    "devopsemp",
+    "devemp"
+   ]
+  },
+  "providerSettings": {
+   "aws": {
+    "useAmiBlockDeviceMappings": false
+   }
+  },
+  "trafficGuards": [],
+  "updateTs": "1586949995183",
+  "user": "opsmxadmin"
+ },
+ "clusters": {},
+ "name": "oesdemo"
+}

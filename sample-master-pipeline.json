@@ -1,0 +1,39 @@
+{
+ "application": "permtestapp2",
+ "id": "807494b2-d30e-46f9-9444-240710a966c8",
+ "index": 9,
+ "keepWaitingPipelines": false,
+ "lastModifiedBy": "opsmxuser",
+ "limitConcurrent": true,
+ "name": "masterservice",
+ "spelEvaluator": "v4",
+ "stages": [
+  {
+   "application": "permtestapp2",
+   "failPipeline": true,
+   "name": "Service 1",
+   "pipeline": "1d663bbc-a751-4040-aaaf-8c3ef6db485f",
+   "pipelineParameters": {},
+   "refId": "1",
+   "requisiteStageRefIds": [],
+   "stageEnabled": {
+    "type": "expression"
+   },
+   "type": "pipeline",
+   "waitForCompletion": true
+  },
+  {
+   "application": "permtestapp2",
+   "failPipeline": true,
+   "name": "Service 2",
+   "pipeline": "e5d9422b-22d6-4bbe-9cdb-ba71117c51b4",
+   "pipelineParameters": {},
+   "refId": "2",
+   "requisiteStageRefIds": [],
+   "type": "pipeline",
+   "waitForCompletion": true
+  }
+ ],
+ "triggers": [],
+ "updateTs": "1586949291000"
+}
