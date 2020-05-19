@@ -1,3 +1,3 @@
 spec:
   selector:
-    app: minio-test
+    release: null

@@ -1,0 +1,17 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: 'nginx-deployment'
+spec:
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: nginx
+        release: 'green'
+    spec:
+      containers:
+        - image: 'jsandy11/nginx:green'
+          name: nginx
+          ports:
+            - containerPort: 80
