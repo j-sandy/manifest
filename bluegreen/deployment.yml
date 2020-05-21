@@ -11,7 +11,7 @@ spec:
         release: '${parameters.release}'
     spec:
       containers:
-        - image: 'nginx:1.7.9'
+        - image: 'jsandy11/nginx:${parameters.release}'
           name: nginx
           ports:
             - containerPort: 80
