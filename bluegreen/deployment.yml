@@ -1,0 +1,24 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: 'nginx-deployment-${parameters.release}'
+spec:
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: nginx
+        release: '${parameters.release}'
+    spec:
+      containers:
+        - image: 'nginx:1.7.9'
+          name: nginx
+          ports:
+            - containerPort: 80
+        volumeMounts:
+        - name: config
+          mountPath: "/config"
+      volumes:
+      - name: config
+        configMap: 
+          name: nginx-configmap
