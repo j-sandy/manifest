@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spin-clouddriver-ro-debug
+  namespace: scbspinnaker
+spec:
+  ports:
+    - port: 9876    
+      targetPort: 9876
+      protocol: TCP
+  selector:
+    app: spin
+    cluster: spin-clouddriver-ro
+  type: NodePort
